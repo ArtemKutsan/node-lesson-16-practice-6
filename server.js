@@ -1,16 +1,31 @@
-import experss from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import sequelize from './config/db.js';
-import { User, Post } from './models/index.js';
-import { up } from './migrations/20260512074229-create-users.js';
+import User from './models/User.js';
 
 dotenv.config();
 
-const app = experss();
+const app = express();
 const port = process.env.PORT || 3333;
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Hello, Sequelize with Express!');
+});
+
+app.post('/users', async (req, res) => {
+  try {
+    const { name, email, age } = req.body;
+
+    const user = await User.create({ name, email, age });
+
+    return res.status(201).json(user);
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+    });
+  }
 });
 
 app.listen(port, async () => {
