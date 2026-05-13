@@ -28,6 +28,29 @@ app.post('/users', async (req, res) => {
   }
 });
 
+app.get('/users', async (req, res) => {
+  try {
+    const { limit, offset, isActive } = req.query;
+    const where = {};
+
+    if (isActive !== undefined) {
+      where.isActive = isActive === 'true';
+    }
+
+    const users = await User.findAll({
+      where,
+      limit: limit ? Number(limit) : undefined,
+      offset: offset ? Number(offset) : undefined,
+    });
+
+    return res.json(users);
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+    });
+  }
+});
+
 app.listen(port, async () => {
   try {
     await sequelize.authenticate();
